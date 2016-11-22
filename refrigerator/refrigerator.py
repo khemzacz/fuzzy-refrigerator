@@ -65,3 +65,36 @@ for ax in (ax0, ax1, ax2):
 plt.tight_layout()
 
 plt.show()
+
+inp1_val = 0; inp2_val = 0;
+val_ok = False
+while val_ok == False:
+    inp1_val = input("Please insert the temperature of inserted drink[between 2°C and 35°C]:")
+    try:
+        inp1_val = float(inp1_val)
+        if (inp1_val < 2.0) or (inp1_val > 35.0):
+            print("Value is incorrect. Temperature should vary between 2°C and 35°C")
+        else:
+            val_ok = True
+    except ValueError:
+        print("Value is incorrect. Temperature should vary between 2°C and 35°C[use number without \"35°C\"]")
+
+val_ok = False
+
+while val_ok == False:
+    inp2_val = input("Please insert the volume of inserted drink[between 100ml and 3000ml]:")
+    try:
+        inp2_val = float(inp2_val)
+        if (inp2_val < 100.0) or (inp2_val > 3000.0):
+            print("Value is incorrect. Volume should vary between 100ml and 3000ml")
+        else:
+            val_ok = True
+    except ValueError:
+        print("Value is incorrect. Volume should vary between 100ml and 3000ml[use number without \"ml\"]")
+
+val_ok = False
+
+print("Input values are: "+str(inp1_val)+"°C for starting temperature and "+str(inp2_val)+"ml for drink volume")
+
+
+
