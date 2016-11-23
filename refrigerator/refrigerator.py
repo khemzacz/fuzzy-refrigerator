@@ -116,35 +116,130 @@ volume_level_vhi = fuzz.interp_membership(x_volume, volume_enormous, inp2_val)
 # Now we take our rules and apply them. Rule 1 concerns bad food OR service.
 # The OR operator means we take the maximum of these two.
 rule1 = np.fmin(in_temp_level_vlo, volume_level_vlo)
-rule2 = np.fmin(in_temp_level_vlo, volume_level_med)
-rule3 = np.fmin(in_temp_level_vlo, volume_level_vhi)
-rule4 = np.fmin(in_temp_level_med, volume_level_vlo)
-rule5 = np.fmin(in_temp_level_med, volume_level_med)
-rule6 = np.fmin(in_temp_level_med, volume_level_vhi)
-rule7 = np.fmin(in_temp_level_vhi, volume_level_vlo)
-rule8 = np.fmin(in_temp_level_vhi, volume_level_med)
-rule9 = np.fmin(in_temp_level_vhi, volume_level_vhi)
+rule2 = np.fmin(in_temp_level_vlo, volume_level_lo)
+rule3 = np.fmin(in_temp_level_vlo, volume_level_med)
+rule4 = np.fmin(in_temp_level_vlo, volume_level_hi)
+rule5 = np.fmin(in_temp_level_vlo, volume_level_vhi)
+rule6 = np.fmin(in_temp_level_lo, volume_level_vlo)
+rule7 = np.fmin(in_temp_level_lo, volume_level_lo)
+rule8 = np.fmin(in_temp_level_lo, volume_level_med)
+rule9 = np.fmin(in_temp_level_lo, volume_level_hi)
+rule10 = np.fmin(in_temp_level_lo, volume_level_vhi)
+rule11 = np.fmin(in_temp_level_med, volume_level_vlo)
+rule12 = np.fmin(in_temp_level_med, volume_level_lo)
+rule13 = np.fmin(in_temp_level_med, volume_level_med)
+rule14 = np.fmin(in_temp_level_med, volume_level_hi)
+rule15 = np.fmin(in_temp_level_med, volume_level_vhi)
+rule16 = np.fmin(in_temp_level_hi, volume_level_vlo)
+rule17 = np.fmin(in_temp_level_hi, volume_level_lo)
+rule18 = np.fmin(in_temp_level_hi, volume_level_med)
+rule19 = np.fmin(in_temp_level_hi, volume_level_hi)
+rule20 = np.fmin(in_temp_level_hi, volume_level_vhi)
+rule21 = np.fmin(in_temp_level_vhi, volume_level_vlo)
+rule22 = np.fmin(in_temp_level_vhi, volume_level_lo)
+rule23 = np.fmin(in_temp_level_vhi, volume_level_med)
+rule24 = np.fmin(in_temp_level_vhi, volume_level_hi)
+rule25 = np.fmin(in_temp_level_vhi, volume_level_vhi)
 
 # Now we apply this by clipping the top off the corresponding output
 # membership function with `np.fmin`
-time_activation_lo = np.fmin(rule1, time_short)
-time_activation_med = np.fmin(rule5, time_med)
-time_activation_long = np.fmin(rule7, time_long)
-time_activation_very_long = np.fmin(rule9, time_very_long)
+w, h = 25, 2
+time_activation = [[0 for x in range(h)] for y in range(w)]
+
+time_activation[0][0] = np.fmin(rule1, time_short); time_activation[0][1] = time_short
+time_activation[1][0] = np.fmin(rule2, time_short); time_activation[1][1] = time_short
+time_activation[2][0] = np.fmin(rule3, time_short); time_activation[2][1] = time_short
+time_activation[3][0] = np.fmin(rule4, time_med); time_activation[3][1] = time_med
+time_activation[4][0] = np.fmin(rule5, time_med); time_activation[4][1] = time_med
+time_activation[5][0] = np.fmin(rule6, time_short); time_activation[5][1] = time_short
+time_activation[6][0] = np.fmin(rule7, time_short); time_activation[6][1] = time_short
+time_activation[7][0] = np.fmin(rule8, time_med); time_activation[7][1] = time_med
+time_activation[8][0] = np.fmin(rule9, time_med); time_activation[8][1] = time_med
+time_activation[9][0] = np.fmin(rule10, time_long); time_activation[9][1] = time_long
+time_activation[10][0] = np.fmin(rule11, time_short); time_activation[10][1] = time_short
+time_activation[11][0] = np.fmin(rule12, time_med); time_activation[11][1] = time_med
+time_activation[12][0] = np.fmin(rule13, time_med); time_activation[12][1] = time_med
+time_activation[13][0] = np.fmin(rule14, time_long); time_activation[13][1] = time_long
+time_activation[14][0] = np.fmin(rule15, time_long); time_activation[14][1] = time_long
+time_activation[15][0] = np.fmin(rule16, time_med); time_activation[15][1] = time_med
+time_activation[16][0] = np.fmin(rule17, time_med); time_activation[16][1] = time_med
+time_activation[17][0] = np.fmin(rule18, time_long); time_activation[17][1] = time_long
+time_activation[18][0] = np.fmin(rule19, time_long); time_activation[18][1] = time_long
+time_activation[19][0] = np.fmin(rule20, time_very_long); time_activation[19][1] = time_very_long
+time_activation[20][0] = np.fmin(rule21, time_med); time_activation[20][1] = time_med
+time_activation[21][0] = np.fmin(rule22, time_long); time_activation[21][1] = time_long
+time_activation[22][0] = np.fmin(rule23, time_long); time_activation[22][1] = time_long
+time_activation[23][0] = np.fmin(rule24, time_very_long); time_activation[23][1] = time_very_long
+time_activation[24][0] = np.fmin(rule25, time_very_long); time_activation[24][1] = time_very_long
+
 
 time0 = np.zeros_like(x_time)
 
 # Visualize this
 fig, ax0 = plt.subplots(figsize=(8, 4))
 
-ax0.fill_between(x_time, time0, time_activation_lo, facecolor='b', alpha=0.7)
-ax0.plot(x_time, time_short, 'b', linewidth=0.5, linestyle='--', )
-ax0.fill_between(x_time, time0, time_activation_med, facecolor='g', alpha=0.7)
-ax0.plot(x_time, time_med, 'g', linewidth=0.5, linestyle='--')
-ax0.fill_between(x_time, time0, time_activation_long, facecolor='r', alpha=0.7)
-ax0.plot(x_time, time_long, 'r', linewidth=0.5, linestyle='--')
-ax0.fill_between(x_time, time0, time_activation_very_long, facecolor='m', alpha=0.7)
-ax0.plot(x_time, time_very_long, 'm', linewidth=0.5, linestyle='--')
+color_stack = ['y', 'm', 'c', 'r', 'g', 'b', 'g', 'r', 'c', 'm', 'y']
+
+i = 0
+while i < 25:
+    ax0.fill_between(x_time, time0, time_activation[i][0], facecolor='b', alpha=0.7)
+    ax0.plot(x_time, time_activation[i][1], 'b', linewidth=0.5, linestyle='--', )
+    i=i+1
+
+#
+# ax0.fill_between(x_time, time0, time_activation[1][0], facecolor='b', alpha=0.7)
+# ax0.plot(x_time, time_short, 'b', linewidth=0.5, linestyle='--', )
+# ax0.fill_between(x_time, time0, time_activation_2, facecolor='b', alpha=0.7)
+# ax0.plot(x_time, time_short, 'b', linewidth=0.5, linestyle='--', )
+# ax0.fill_between(x_time, time0, time_activation_3, facecolor='b', alpha=0.7)
+# ax0.plot(x_time, time_short, 'b', linewidth=0.5, linestyle='--', )
+# ax0.fill_between(x_time, time0, time_activation_4, facecolor='b', alpha=0.7)
+# ax0.plot(x_time, time_med, 'b', linewidth=0.5, linestyle='--', )
+# ax0.fill_between(x_time, time0, time_activation_5, facecolor='b', alpha=0.7)
+# ax0.plot(x_time, time_med, 'b', linewidth=0.5, linestyle='--', )
+# ax0.fill_between(x_time, time0, time_activation_6, facecolor='b', alpha=0.7)
+# ax0.plot(x_time, time_short, 'b', linewidth=0.5, linestyle='--', )
+# ax0.fill_between(x_time, time0, time_activation_7, facecolor='b', alpha=0.7)
+# ax0.plot(x_time, time_short, 'b', linewidth=0.5, linestyle='--', )
+# ax0.fill_between(x_time, time0, time_activation_8, facecolor='b', alpha=0.7)
+# ax0.plot(x_time, time_med, 'b', linewidth=0.5, linestyle='--', )
+# ax0.fill_between(x_time, time0, time_activation_9, facecolor='b', alpha=0.7)
+# ax0.plot(x_time, time_med, 'b', linewidth=0.5, linestyle='--', )
+# ax0.fill_between(x_time, time0, time_activation_10, facecolor='b', alpha=0.7)
+# ax0.plot(x_time, time_long, 'b', linewidth=0.5, linestyle='--', )
+# ax0.fill_between(x_time, time0, time_activation_11, facecolor='b', alpha=0.7)
+# ax0.plot(x_time, time_short, 'b', linewidth=0.5, linestyle='--', )
+# ax0.fill_between(x_time, time0, time_activation_12, facecolor='b', alpha=0.7)
+# ax0.plot(x_time, time_med, 'b', linewidth=0.5, linestyle='--', )
+# ax0.fill_between(x_time, time0, time_activation_13, facecolor='b', alpha=0.7)
+# ax0.plot(x_time, time_med, 'b', linewidth=0.5, linestyle='--', )
+# ax0.fill_between(x_time, time0, time_activation_14, facecolor='b', alpha=0.7)
+# ax0.plot(x_time, time_long, 'b', linewidth=0.5, linestyle='--', )
+# ax0.fill_between(x_time, time0, time_activation_15, facecolor='b', alpha=0.7)
+# ax0.plot(x_time, time_long, 'b', linewidth=0.5, linestyle='--', )
+# ax0.fill_between(x_time, time0, time_activation_16, facecolor='b', alpha=0.7)
+# ax0.plot(x_time, time_med, 'b', linewidth=0.5, linestyle='--', )
+# ax0.fill_between(x_time, time0, time_activation_17, facecolor='b', alpha=0.7)
+# ax0.plot(x_time, time_med, 'b', linewidth=0.5, linestyle='--', )
+# ax0.fill_between(x_time, time0, time_activation_18, facecolor='b', alpha=0.7)
+# ax0.plot(x_time, time_long, 'b', linewidth=0.5, linestyle='--', )
+# ax0.fill_between(x_time, time0, time_activation_19, facecolor='b', alpha=0.7)
+# ax0.plot(x_time, time_long, 'b', linewidth=0.5, linestyle='--', )
+# ax0.fill_between(x_time, time0, time_activation_20, facecolor='b', alpha=0.7)
+# ax0.plot(x_time, time_very_long, 'b', linewidth=0.5, linestyle='--', )
+# ax0.fill_between(x_time, time0, time_activation_21, facecolor='b', alpha=0.7)
+# ax0.plot(x_time, time_med, 'b', linewidth=0.5, linestyle='--', )
+# ax0.fill_between(x_time, time0, time_activation_22, facecolor='b', alpha=0.7)
+# ax0.plot(x_time, time_long, 'b', linewidth=0.5, linestyle='--', )
+# ax0.fill_between(x_time, time0, time_activation_23, facecolor='b', alpha=0.7)
+# ax0.plot(x_time, time_long, 'b', linewidth=0.5, linestyle='--', )
+# ax0.fill_between(x_time, time0, time_activation_24, facecolor='b', alpha=0.7)
+# ax0.plot(x_time, time_very_long, 'b', linewidth=0.5, linestyle='--', )
+# ax0.fill_between(x_time, time0, time_activation_25, facecolor='b', alpha=0.7)
+# ax0.plot(x_time, time_very_long, 'b', linewidth=0.5, linestyle='--', )
+
+
+
 ax0.set_title('Output membership activity')
 
 # Turn off top/right axes
