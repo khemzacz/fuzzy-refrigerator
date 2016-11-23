@@ -2,6 +2,38 @@ import numpy as np
 import skfuzzy as fuzz
 import matplotlib.pyplot as plt
 
+
+inp1_val = 0; inp2_val = 0;
+val_ok = False
+while val_ok == False:
+    inp1_val = input("Please insert the temperature of inserted drink[between 2°C and 35°C]:")
+    try:
+        inp1_val = float(inp1_val)
+        if (inp1_val < 2.0) or (inp1_val > 35.0):
+            print("Value is incorrect. Temperature should vary between 2°C and 35°C")
+        else:
+            val_ok = True
+    except ValueError:
+        print("Value is incorrect. Temperature should vary between 2°C and 35°C[use number without \"35°C\"]")
+
+val_ok = False
+
+while val_ok == False:
+    inp2_val = input("Please insert the volume of inserted drink[between 100ml and 3000ml]:")
+    try:
+        inp2_val = float(inp2_val)
+        if (inp2_val < 100.0) or (inp2_val > 3000.0):
+            print("Value is incorrect. Volume should vary between 100ml and 3000ml")
+        else:
+            val_ok = True
+    except ValueError:
+        print("Value is incorrect. Volume should vary between 100ml and 3000ml[use number without \"ml\"]")
+
+val_ok = False
+
+print("Input values are: "+str(inp1_val)+"°C for starting temperature and "+str(inp2_val)+"ml for drink volume")
+
+
 # Generate universe variables
 #   * Quality and service on subjective ranges [0, 10]
 #   * Tip has a range of [0, 25] in units of percentage points
@@ -66,35 +98,63 @@ plt.tight_layout()
 
 plt.show()
 
-inp1_val = 0; inp2_val = 0;
-val_ok = False
-while val_ok == False:
-    inp1_val = input("Please insert the temperature of inserted drink[between 2°C and 35°C]:")
-    try:
-        inp1_val = float(inp1_val)
-        if (inp1_val < 2.0) or (inp1_val > 35.0):
-            print("Value is incorrect. Temperature should vary between 2°C and 35°C")
-        else:
-            val_ok = True
-    except ValueError:
-        print("Value is incorrect. Temperature should vary between 2°C and 35°C[use number without \"35°C\"]")
+# We need the activation of our fuzzy membership functions at these values.
+# The exact values 6.5 and 9.8 do not exist on our universes...
+# This is what fuzz.interp_membership exists for!
+in_temp_level_vlo = fuzz.interp_membership(x_in_temp, in_temp_very_low, inp1_val)
+in_temp_level_lo = fuzz.interp_membership(x_in_temp, in_temp_low, inp1_val)
+in_temp_level_med = fuzz.interp_membership(x_in_temp, in_temp_med, inp1_val)
+in_temp_level_hi = fuzz.interp_membership(x_in_temp, in_temp_high, inp1_val)
+in_temp_level_vhi = fuzz.interp_membership(x_in_temp, in_temp_very_high, inp1_val)
 
-val_ok = False
+volume_level_vlo = fuzz.interp_membership(x_volume, volume_very_low, inp2_val)
+volume_level_lo = fuzz.interp_membership(x_volume, volume_low, inp2_val)
+volume_level_med = fuzz.interp_membership(x_volume, volume_med, inp2_val)
+volume_level_hi = fuzz.interp_membership(x_volume, volume_big, inp2_val)
+volume_level_vhi = fuzz.interp_membership(x_volume, volume_enormous, inp2_val)
 
-while val_ok == False:
-    inp2_val = input("Please insert the volume of inserted drink[between 100ml and 3000ml]:")
-    try:
-        inp2_val = float(inp2_val)
-        if (inp2_val < 100.0) or (inp2_val > 3000.0):
-            print("Value is incorrect. Volume should vary between 100ml and 3000ml")
-        else:
-            val_ok = True
-    except ValueError:
-        print("Value is incorrect. Volume should vary between 100ml and 3000ml[use number without \"ml\"]")
+# Now we take our rules and apply them. Rule 1 concerns bad food OR service.
+# The OR operator means we take the maximum of these two.
+rule1 = np.fmin(in_temp_level_vlo, volume_level_vlo)
+rule2 = np.fmin(in_temp_level_vlo, volume_level_med)
+rule3 = np.fmin(in_temp_level_vlo, volume_level_vhi)
+rule4 = np.fmin(in_temp_level_med, volume_level_vlo)
+rule5 = np.fmin(in_temp_level_med, volume_level_med)
+rule6 = np.fmin(in_temp_level_med, volume_level_vhi)
+rule7 = np.fmin(in_temp_level_vhi, volume_level_vlo)
+rule8 = np.fmin(in_temp_level_vhi, volume_level_med)
+rule9 = np.fmin(in_temp_level_vhi, volume_level_vhi)
 
-val_ok = False
+# Now we apply this by clipping the top off the corresponding output
+# membership function with `np.fmin`
+time_activation_lo = np.fmin(rule1, time_short)
+time_activation_med = np.fmin(rule5, time_med)
+time_activation_long = np.fmin(rule7, time_long)
+time_activation_very_long = np.fmin(rule9, time_very_long)
 
-print("Input values are: "+str(inp1_val)+"°C for starting temperature and "+str(inp2_val)+"ml for drink volume")
+time0 = np.zeros_like(x_time)
 
+# Visualize this
+fig, ax0 = plt.subplots(figsize=(8, 4))
 
+ax0.fill_between(x_time, time0, time_activation_lo, facecolor='b', alpha=0.7)
+ax0.plot(x_time, time_short, 'b', linewidth=0.5, linestyle='--', )
+ax0.fill_between(x_time, time0, time_activation_med, facecolor='g', alpha=0.7)
+ax0.plot(x_time, time_med, 'g', linewidth=0.5, linestyle='--')
+ax0.fill_between(x_time, time0, time_activation_long, facecolor='r', alpha=0.7)
+ax0.plot(x_time, time_long, 'r', linewidth=0.5, linestyle='--')
+ax0.fill_between(x_time, time0, time_activation_very_long, facecolor='m', alpha=0.7)
+ax0.plot(x_time, time_very_long, 'm', linewidth=0.5, linestyle='--')
+ax0.set_title('Output membership activity')
+
+# Turn off top/right axes
+for ax in (ax0,):
+    ax.spines['top'].set_visible(False)
+    ax.spines['right'].set_visible(False)
+    ax.get_xaxis().tick_bottom()
+    ax.get_yaxis().tick_left()
+
+plt.tight_layout()
+
+plt.show()
 
