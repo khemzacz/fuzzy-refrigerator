@@ -5,11 +5,27 @@ import threading
 import os
 import time
 
+def getInputAndcheckIfValueInRange(min, max, input_name):
+    input_ok = False
+    while input_ok == False:
+        print("Please insert " + str(input_name) + " value between: [" + str(min) + "," + str(max) + "]")
+        value = input()
+        try:
+            tmp = float(value)
+            if (tmp > min) and (tmp < max):
+                input_ok = True
+                return tmp
+                break
+            else:
+                print("The given value is out of range")
+        except ValueError:
+            print("The given value is not a number")
+
 # Chlodzenie napojow fuzzy w lodowce
 
 # New Antecedent/Consequent objects hold universe variables and membership
 # functions
-drink_volume = ctrl.Antecedent(np.arange(0, 3001, 1), 'drink_volume') # objetosc napoju
+drink_volume = ctrl.Antecedent(np.arange(100, 3001, 1), 'drink_volume') # objetosc napoju
 outside_temperature = ctrl.Antecedent(np.arange(15, 36, 1), 'outside_temperature') # temperatura otoczenia, zakladam ze napoj jest na poczatku w temperaturze otoczenia
 freezer_intensity = ctrl.Antecedent(np.arange(0.1, 1.0, 0.01), 'freezer_intensity') # minimalna intensywnosc chlodzenia dla potrzebnej temperatury to 10%
 cooling_time = ctrl.Consequent(np.arange(15, 360, 1), 'cooling_time') # czas chlodzenia w minutach
@@ -49,9 +65,9 @@ time = ctrl.ControlSystemSimulation(time_ctrl)
 
 # Pass inputs to the ControlSystem using Antecedent labels with Pythonic API
 # Note: if you like passing many inputs all at once, use .inputs(dict_of_data)
-time.input['drink_volume'] = input("Please insert drink volume [betwee]")
-time.input['outside_temperature'] = 23.9
-time.input['freezer_intensity'] = 64
+time.input['drink_volume'] = getInputAndcheckIfValueInRange(100, 3000, "drink volume")
+time.input['outside_temperature'] = getInputAndcheckIfValueInRange(15, 36, "outside temperature")
+time.input['freezer_intensity'] = getInputAndcheckIfValueInRange(0.1, 1.0, "freezer intensity")
 
 # Crunch the numbers
 time.compute()
@@ -63,6 +79,3 @@ cooling_time.view(sim=time)
 os.system("pause")
 
 
-def checkIfValueInRange(value, min, max):
-
-    pass
