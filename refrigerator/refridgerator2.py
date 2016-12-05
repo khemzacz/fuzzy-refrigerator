@@ -26,38 +26,116 @@ def getInputAndcheckIfValueInRange(min, max, input_name):
 # New Antecedent/Consequent objects hold universe variables and membership
 # functions
 drink_volume = ctrl.Antecedent(np.arange(100, 3001, 1), 'drink_volume') # objetosc napoju
-outside_temperature = ctrl.Antecedent(np.arange(15, 36, 1), 'outside_temperature') # temperatura otoczenia, zakladam ze napoj jest na poczatku w temperaturze otoczenia
-freezer_intensity = ctrl.Antecedent(np.arange(0.1, 1.0, 0.01), 'freezer_intensity') # minimalna intensywnosc chlodzenia dla potrzebnej temperatury to 10%
+room_temperature = ctrl.Antecedent(np.arange(15, 36, 1), 'outside_temperature') # temperatura otoczenia, zakladam ze napoj jest na poczatku w temperaturze otoczenia
+freezer_intensity = ctrl.Antecedent(np.arange(0.1, 1.01, 0.01), 'freezer_intensity') # minimalna intensywnosc chlodzenia dla potrzebnej temperatury to 10%
 cooling_time = ctrl.Consequent(np.arange(15, 360, 1), 'cooling_time') # czas chlodzenia w minutach
 
 # Auto-membership function population is possible with .automf(3, 5, or 7)
-drink_volume.automf(5)
-outside_temperature.automf(5)
-freezer_intensity.automf(5)
+# drink_volume.automf(5)
+drink_volume['tiny'] = fuzz.trimf(drink_volume.universe, [100, 100, 500])
+drink_volume['small'] = fuzz.trimf(drink_volume.universe, [100, 500, 1250])
+drink_volume['average'] = fuzz.trimf(drink_volume.universe, [500, 1250, 2250])
+drink_volume['large'] = fuzz.trimf(drink_volume.universe, [1250, 2250, 3000])
+drink_volume['enormous'] = fuzz.trimf(drink_volume.universe, [2250, 3000, 3000])
 
+# outside_temperature.automf(5)
+room_temperature['freezing'] = fuzz.trimf(room_temperature.universe, [15, 15, 18])
+room_temperature['cold'] = fuzz.trimf(room_temperature.universe, [15, 18, 23])
+room_temperature['convenient'] = fuzz.trimf(room_temperature.universe, [18, 23, 27])
+room_temperature['hot'] = fuzz.trimf(room_temperature.universe, [23, 29, 35])
+room_temperature['sweltering'] = fuzz.trimf(room_temperature.universe, [29, 35, 35])
+freezer_intensity.automf(5)
 
 # Custom membership functions can be built interactively with a familiar,
 # Pythonic API
-cooling_time['very short'] = fuzz.trimf(cooling_time.universe, [15, 15, 60])
+cooling_time['brief'] = fuzz.trimf(cooling_time.universe, [15, 15, 60])
 cooling_time['short'] = fuzz.trimf(cooling_time.universe, [15, 60, 120])
-cooling_time['medium'] = fuzz.trimf(cooling_time.universe, [60, 120, 180])
+cooling_time['average'] = fuzz.trimf(cooling_time.universe, [60, 120, 180])
 cooling_time['long'] = fuzz.trimf(cooling_time.universe, [120, 180, 240])
-cooling_time['very_long'] = fuzz.trimf(cooling_time.universe, [180, 360, 360])
+cooling_time['very long'] = fuzz.trimf(cooling_time.universe, [180, 360, 360])
 
 
 # You can see how these look with .view()
-outside_temperature['average'].view()
+room_temperature['convenient'].view()
 drink_volume.view()
 
 freezer_intensity.view()
 
-rule1 = ctrl.Rule(drink_volume['poor'] | outside_temperature['poor'] | freezer_intensity['good'], cooling_time['very short'])
-rule2 = ctrl.Rule(drink_volume['mediocre'] | outside_temperature['mediocre'] | freezer_intensity['decent'], cooling_time['short'])
-rule3 = ctrl.Rule(drink_volume['average'], cooling_time['medium'])
-rule4 = ctrl.Rule(drink_volume['decent'] | outside_temperature['decent'] | freezer_intensity['mediocre'], cooling_time['long'])
-rule5 = ctrl.Rule(drink_volume['good'] | outside_temperature['good'] | freezer_intensity['poor'], cooling_time['very_long'])
+rule1 = ctrl.Rule(drink_volume['tiny'] & room_temperature['freezing'] & freezer_intensity['good'], cooling_time['brief'])
+rule2 = ctrl.Rule(drink_volume['small'] & room_temperature['cold'] & freezer_intensity['decent'], cooling_time['short'])
+rule3 = ctrl.Rule(drink_volume['average'] & room_temperature['convenient'] & freezer_intensity['average'], cooling_time['average'])
+rule4 = ctrl.Rule(drink_volume['large'] & room_temperature['hot'] & freezer_intensity['mediocre'], cooling_time['long'])
+rule5 = ctrl.Rule(drink_volume['enormous'] & room_temperature['sweltering'] & freezer_intensity['poor'], cooling_time['very long'])
 
-# rule1.view()
+rule6 = ctrl.Rule(drink_volume['tiny'] | room_temperature['freezing'] | freezer_intensity['good'], cooling_time['brief'])
+rule7 = ctrl.Rule(drink_volume['small'] | room_temperature['cold'] | freezer_intensity['decent'], cooling_time['short'])
+rule8 = ctrl.Rule(drink_volume['average'] | room_temperature['convenient'] & freezer_intensity['average'], cooling_time['average'])
+rule9 = ctrl.Rule(drink_volume['large'] | room_temperature['hot'] | freezer_intensity['mediocre'], cooling_time['long'])
+rule10 = ctrl.Rule(drink_volume['enormous'] | room_temperature['sweltering'] | freezer_intensity['poor'], cooling_time['very long'])
+
+rule11 = ctrl.Rule(drink_volume['tiny'] & freezer_intensity['poor'], cooling_time['average'])
+rule12 = ctrl.Rule(drink_volume['tiny'] & freezer_intensity['mediocre'], cooling_time['short'])
+rule13 = ctrl.Rule(drink_volume['tiny'] & freezer_intensity['average'], cooling_time['short'])
+rule14 = ctrl.Rule(drink_volume['tiny'] & freezer_intensity['decent'], cooling_time['brief'])
+rule15 = ctrl.Rule(drink_volume['tiny'] & freezer_intensity['good'], cooling_time['brief'])
+rule16 = ctrl.Rule(drink_volume['small'] & freezer_intensity['poor'], cooling_time['average'])
+rule17 = ctrl.Rule(drink_volume['small'] & freezer_intensity['mediocre'], cooling_time['average'])
+rule18 = ctrl.Rule(drink_volume['small'] & freezer_intensity['average'], cooling_time['short'])
+rule19 = ctrl.Rule(drink_volume['small'] & freezer_intensity['decent'], cooling_time['short'])
+rule20 = ctrl.Rule(drink_volume['small'] & freezer_intensity['good'], cooling_time['brief'])
+rule21 = ctrl.Rule(drink_volume['average'] & freezer_intensity['poor'], cooling_time['long'])
+rule22 = ctrl.Rule(drink_volume['average'] & freezer_intensity['mediocre'], cooling_time['average'])
+rule23 = ctrl.Rule(drink_volume['average'] & freezer_intensity['average'], cooling_time['average'])
+rule24 = ctrl.Rule(drink_volume['average'] & freezer_intensity['decent'], cooling_time['short'])
+rule25 = ctrl.Rule(drink_volume['average'] & freezer_intensity['good'], cooling_time['short'])
+rule26 = ctrl.Rule(drink_volume['large'] & freezer_intensity['poor'], cooling_time['long'])
+rule27 = ctrl.Rule(drink_volume['large'] & freezer_intensity['mediocre'], cooling_time['long'])
+rule28 = ctrl.Rule(drink_volume['large'] & freezer_intensity['average'], cooling_time['average'])
+rule29 = ctrl.Rule(drink_volume['large'] & freezer_intensity['decent'], cooling_time['average'])
+rule30 = ctrl.Rule(drink_volume['large'] & freezer_intensity['good'], cooling_time['short'])
+rule31 = ctrl.Rule(drink_volume['enormous'] & freezer_intensity['poor'], cooling_time['very long'])
+rule32 = ctrl.Rule(drink_volume['enormous'] & freezer_intensity['mediocre'], cooling_time['long'])
+rule33 = ctrl.Rule(drink_volume['enormous'] & freezer_intensity['average'], cooling_time['long'])
+rule34 = ctrl.Rule(drink_volume['enormous'] & freezer_intensity['decent'], cooling_time['average'])
+rule35 = ctrl.Rule(drink_volume['enormous'] & freezer_intensity['good'], cooling_time['average'])
+
+rule36 = ctrl.Rule(drink_volume['tiny'] & room_temperature['freezing'], cooling_time['brief'])
+rule37 = ctrl.Rule(drink_volume['tiny'] & room_temperature['cold'], cooling_time['brief'])
+rule38 = ctrl.Rule(drink_volume['tiny'] & room_temperature['convenient'], cooling_time['brief'])
+rule39 = ctrl.Rule(drink_volume['tiny'] & room_temperature['hot'], cooling_time['short'])
+rule40 = ctrl.Rule(drink_volume['tiny'] & room_temperature['sweltering'], cooling_time['short'])
+rule41 = ctrl.Rule(drink_volume['small'] & room_temperature['freezing'], cooling_time['brief'])
+rule42 = ctrl.Rule(drink_volume['small'] & room_temperature['cold'], cooling_time['brief'])
+rule43 = ctrl.Rule(drink_volume['small'] & room_temperature['convenient'], cooling_time['short'])
+rule44 = ctrl.Rule(drink_volume['small'] & room_temperature['hot'], cooling_time['short'])
+rule45 = ctrl.Rule(drink_volume['small'] & room_temperature['sweltering'], cooling_time['short'])
+rule46 = ctrl.Rule(drink_volume['average'] & room_temperature['freezing'], cooling_time['short'])
+rule47 = ctrl.Rule(drink_volume['average'] & room_temperature['cold'], cooling_time['average'])
+rule48 = ctrl.Rule(drink_volume['average'] & room_temperature['convenient'], cooling_time['average'])
+rule49 = ctrl.Rule(drink_volume['average'] & room_temperature['hot'], cooling_time['long'])
+rule50 = ctrl.Rule(drink_volume['average'] & room_temperature['sweltering'], cooling_time['very long'])
+rule51 = ctrl.Rule(drink_volume['large'] & room_temperature['freezing'], cooling_time['average'])
+rule52 = ctrl.Rule(drink_volume['large'] & room_temperature['cold'], cooling_time['long'])
+rule53 = ctrl.Rule(drink_volume['large'] & room_temperature['convenient'], cooling_time['long'])
+rule54 = ctrl.Rule(drink_volume['large'] & room_temperature['hot'], cooling_time['very long'])
+rule55 = ctrl.Rule(drink_volume['large'] & room_temperature['sweltering'], cooling_time['very long'])
+rule56 = ctrl.Rule(drink_volume['enormous'] & room_temperature['freezing'], cooling_time['long'])
+rule57 = ctrl.Rule(drink_volume['enormous'] & room_temperature['cold'], cooling_time['long'])
+rule58 = ctrl.Rule(drink_volume['enormous'] & room_temperature['convenient'], cooling_time['very long'])
+rule59 = ctrl.Rule(drink_volume['enormous'] & room_temperature['hot'], cooling_time['very long'])
+rule60 = ctrl.Rule(drink_volume['enormous'] & room_temperature['sweltering'], cooling_time['very long'])
+
+
+rule = ctrl.Rule(drink_volume['average'], cooling_time['average'])
+rule = ctrl.Rule(drink_volume[''])
+
+rule = ctrl.Rule(drink_volume['decent'] & room_temperature['decent'] & freezer_intensity['mediocre'], cooling_time['długi'])
+rule = ctrl.Rule(drink_volume['good'] & room_temperature['good'] & freezer_intensity['poor'], cooling_time['bardzo długi'])
+rule = ctrl.Rule(drink_volume['poor'] , cooling_time['bardzo krótki'])
+
+
+
+
 
 time_ctrl = ctrl.ControlSystem([rule1, rule2, rule3, rule4, rule5])
 
