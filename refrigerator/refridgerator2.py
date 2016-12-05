@@ -1,9 +1,7 @@
 import numpy as np
 import skfuzzy as fuzz
 from skfuzzy import control as ctrl
-import threading
 import os
-import time
 
 def getInputAndcheckIfValueInRange(min, max, input_name):
     input_ok = False
@@ -23,6 +21,9 @@ def getInputAndcheckIfValueInRange(min, max, input_name):
 
 # Chlodzenie napojow fuzzy w lodowce
 
+# masterWindow = t
+
+
 # New Antecedent/Consequent objects hold universe variables and membership
 # functions
 drink_volume = ctrl.Antecedent(np.arange(100, 3001, 1), 'drink_volume') # objetosc napoju
@@ -41,7 +42,7 @@ drink_volume['enormous'] = fuzz.trimf(drink_volume.universe, [2250, 3000, 3000])
 # outside_temperature.automf(5)
 room_temperature['freezing'] = fuzz.trimf(room_temperature.universe, [15, 15, 18])
 room_temperature['cold'] = fuzz.trimf(room_temperature.universe, [15, 18, 23])
-room_temperature['convenient'] = fuzz.trimf(room_temperature.universe, [18, 23, 27])
+room_temperature['convenient'] = fuzz.trimf(room_temperature.universe, [18, 23, 29])
 room_temperature['hot'] = fuzz.trimf(room_temperature.universe, [23, 29, 35])
 room_temperature['sweltering'] = fuzz.trimf(room_temperature.universe, [29, 35, 35])
 freezer_intensity.automf(5)
@@ -51,15 +52,15 @@ freezer_intensity.automf(5)
 cooling_time['brief'] = fuzz.trimf(cooling_time.universe, [15, 15, 60])
 cooling_time['short'] = fuzz.trimf(cooling_time.universe, [15, 60, 120])
 cooling_time['average'] = fuzz.trimf(cooling_time.universe, [60, 120, 180])
-cooling_time['long'] = fuzz.trimf(cooling_time.universe, [120, 180, 240])
+cooling_time['long'] = fuzz.trimf(cooling_time.universe, [120, 180, 360])
 cooling_time['very long'] = fuzz.trimf(cooling_time.universe, [180, 360, 360])
 
 
 # You can see how these look with .view()
-room_temperature['convenient'].view()
+room_temperature.view()
 drink_volume.view()
-
 freezer_intensity.view()
+cooling_time.view()
 
 rule1 = ctrl.Rule(drink_volume['tiny'] & room_temperature['freezing'] & freezer_intensity['good'], cooling_time['brief'])
 rule2 = ctrl.Rule(drink_volume['small'] & room_temperature['cold'] & freezer_intensity['decent'], cooling_time['short'])
