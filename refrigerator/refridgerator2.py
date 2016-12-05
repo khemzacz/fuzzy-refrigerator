@@ -12,7 +12,7 @@ def getInputAndcheckIfValueInRange(min, max, input_name):
         value = input()
         try:
             tmp = float(value)
-            if (tmp > min) and (tmp < max):
+            if (tmp >= min) and (tmp <= max):
                 input_ok = True
                 return tmp
                 break
@@ -125,19 +125,11 @@ rule58 = ctrl.Rule(drink_volume['enormous'] & room_temperature['convenient'], co
 rule59 = ctrl.Rule(drink_volume['enormous'] & room_temperature['hot'], cooling_time['very long'])
 rule60 = ctrl.Rule(drink_volume['enormous'] & room_temperature['sweltering'], cooling_time['very long'])
 
-
-rule = ctrl.Rule(drink_volume['average'], cooling_time['average'])
-rule = ctrl.Rule(drink_volume[''])
-
-rule = ctrl.Rule(drink_volume['decent'] & room_temperature['decent'] & freezer_intensity['mediocre'], cooling_time['długi'])
-rule = ctrl.Rule(drink_volume['good'] & room_temperature['good'] & freezer_intensity['poor'], cooling_time['bardzo długi'])
-rule = ctrl.Rule(drink_volume['poor'] , cooling_time['bardzo krótki'])
-
-
-
-
-
-time_ctrl = ctrl.ControlSystem([rule1, rule2, rule3, rule4, rule5])
+time_ctrl = ctrl.ControlSystem([rule1, rule2, rule3, rule4, rule5, rule6, rule7, rule8, rule9, rule10, rule12, rule12,
+                                rule13, rule14, rule15, rule16, rule17, rule18, rule19, rule20, rule21, rule22, rule23, rule24,
+                                rule25, rule26, rule27, rule28, rule29, rule30, rule31, rule32, rule33, rule34, rule35, rule36,
+                                rule37, rule38, rule39, rule40, rule41, rule42, rule43, rule44, rule45, rule46, rule47, rule48,
+                                rule49, rule50, rule51, rule52, rule53, rule54, rule55, rule56, rule57, rule58, rule59, rule60])
 
 time = ctrl.ControlSystemSimulation(time_ctrl)
 
